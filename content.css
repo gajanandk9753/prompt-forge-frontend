@@ -1,93 +1,93 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   PromptForge — Injected Styles v3
+   PromptForge — Content Script Styles
+   Sparkle button + Enhancement panel
    ───────────────────────────────────────────────────────────────────────── */
 
-#promptforge-btn {
-  position: fixed;
-  z-index: 999999;
-  display: none;
+/* ─── Sparkle Button ─────────────────────────────────────────────────────── */
+.pf-sparkle-btn {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin-right: 8px;
+  flex-shrink: 0;
   background: linear-gradient(135deg, #7F77DD 0%, #534AB7 100%);
-  color: #ffffff !important;
   border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  border-radius: 6px;
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(83, 74, 183, 0.35);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-  white-space: nowrap;
-  user-select: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(83, 74, 183, 0.2);
+  position: relative;
+  z-index: 10;
+  vertical-align: middle;
+  align-self: center;
 }
 
-#promptforge-btn:hover {
+.pf-sparkle-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(83, 74, 183, 0.45);
+  box-shadow: 0 4px 12px rgba(83, 74, 183, 0.3);
 }
 
-#promptforge-btn:active {
+.pf-sparkle-btn:active {
   transform: translateY(0);
 }
 
-#promptforge-btn svg {
-  flex-shrink: 0;
+.pf-sparkle-btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
 }
 
-/* When in follow-up mode, switch the gradient to teal/green */
-#promptforge-btn.pf-has-context {
-  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+/* Context indicator (glow when conversation exists) */
+.pf-sparkle-btn.pf-has-context {
+  animation: pf-glow 2s ease-in-out infinite;
 }
 
-#promptforge-btn.pf-has-context:hover {
-  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.45);
+@keyframes pf-glow {
+  0%, 100% { box-shadow: 0 1px 3px rgba(83, 74, 183, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(127, 119, 221, 0.6); }
 }
 
-/* ─── Side Panel ─────────────────────────────────────────────────────────── */
+/* ─── Enhancement Panel ──────────────────────────────────────────────────── */
 #promptforge-panel {
   position: fixed;
-  top: 24px;
-  right: 24px;
-  width: 420px;
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-  z-index: 9999999;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  font-size: 14px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 520px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-size: 13px;
   color: #1a1a1a;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transform: translateX(450px);
-  opacity: 0;
-  transition: transform 0.25s ease, opacity 0.2s ease;
 }
 
 #promptforge-panel.pf-visible {
-  transform: translateX(0);
   opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  #promptforge-panel {
-    background: #1f1f23;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #e5e5e5;
-  }
-}
-
+/* Header */
 .pf-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   background: linear-gradient(135deg, #7F77DD 0%, #534AB7 100%);
   color: #fff;
 }
@@ -97,207 +97,323 @@
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+.pf-logo svg {
+  width: 18px;
+  height: 18px;
 }
 
 .pf-close {
-  background: rgba(255, 255, 255, 0.18);
-  border: none;
-  color: #fff;
   width: 28px;
   height: 28px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s;
 }
-.pf-close:hover { background: rgba(255, 255, 255, 0.28); }
 
-.pf-body { padding: 16px 18px; flex: 1; overflow-y: auto; }
+.pf-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
 
+/* Body (scrollable content area) */
+.pf-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 200px;
+}
+
+/* Footer */
 .pf-footer {
-  padding: 12px 18px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(0, 0, 0, 0.02);
-}
-@media (prefers-color-scheme: dark) {
-  .pf-footer { background: rgba(255, 255, 255, 0.03); border-top-color: rgba(255, 255, 255, 0.08); }
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
 }
 
 .pf-footer select {
   width: 100%;
   padding: 8px 10px;
-  font-size: 13px;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
   background: #fff;
   color: #1a1a1a;
   cursor: pointer;
-  font-family: inherit;
+  transition: border 0.15s;
 }
-@media (prefers-color-scheme: dark) {
-  .pf-footer select {
-    background: #2a2a2e; color: #e5e5e5;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+
+.pf-footer select:hover {
+  border-color: #7F77DD;
 }
+
+.pf-footer select:focus {
+  outline: none;
+  border-color: #7F77DD;
+  box-shadow: 0 0 0 3px rgba(127, 119, 221, 0.12);
+}
+
+/* ─── Panel States ───────────────────────────────────────────────────────── */
 
 /* Loading */
 .pf-loading {
-  display: flex; flex-direction: column;
-  align-items: center; padding: 40px 20px; gap: 16px;
+  text-align: center;
+  padding: 40px 20px;
 }
-.pf-loading p { margin: 0; font-size: 13px; color: #6b7280; }
+
 .pf-spinner {
-  width: 32px; height: 32px;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 16px;
   border: 3px solid rgba(127, 119, 221, 0.2);
   border-top-color: #7F77DD;
   border-radius: 50%;
-  animation: pf-spin 0.7s linear infinite;
+  animation: pf-spin 0.8s linear infinite;
 }
-@keyframes pf-spin { to { transform: rotate(360deg); } }
+
+@keyframes pf-spin {
+  to { transform: rotate(360deg); }
+}
+
+.pf-loading p {
+  color: #6b7280;
+  font-size: 14px;
+}
 
 /* Error */
 .pf-error {
-  padding: 16px;
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
 }
-.pf-error-title {
-  margin: 0 0 6px;
-  font-weight: 600; font-size: 14px; color: #B91C1C;
-}
-.pf-error-msg { margin: 0; font-size: 13px; color: #991B1B; }
 
-/* Detected category */
-.pf-detected {
-  font-size: 12px; color: #6b7280;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  background: rgba(127, 119, 221, 0.08);
-  border-radius: 6px;
-  border-left: 3px solid #7F77DD;
+.pf-error-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #DC2626;
+  margin-bottom: 8px;
 }
-@media (prefers-color-scheme: dark) {
-  .pf-detected { color: #a8a4b8; background: rgba(127, 119, 221, 0.15); }
+
+.pf-error-msg {
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Result */
+.pf-detected {
+  display: inline-block;
+  padding: 6px 10px;
+  background: rgba(127, 119, 221, 0.08);
+  border: 1px solid rgba(127, 119, 221, 0.18);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #534AB7;
+  margin-bottom: 16px;
 }
 
 .pf-followup-badge {
-  display: inline-block;
-  background: #10B981;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
-  margin-right: 6px;
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #059669;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
-/* Score row */
 .pf-score-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 10px;
-  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 8px;
 }
-@media (prefers-color-scheme: dark) {
-  .pf-score-row { background: rgba(255, 255, 255, 0.04); }
+
+.pf-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
 }
-.pf-score { display: flex; flex-direction: column; flex: 1; align-items: center; }
-.pf-score-label { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
-.pf-score-val { font-size: 17px; font-weight: 700; }
-.pf-score-low { color: #DC2626; }
-.pf-score-high { color: #059669; }
-.pf-score-arrow { color: #9ca3af; font-size: 18px; }
+
+.pf-score-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.pf-score-val {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.pf-score-low {
+  color: #DC2626;
+}
+
+.pf-score-high {
+  color: #059669;
+}
+
+.pf-score-arrow {
+  font-size: 20px;
+  color: #d1d5db;
+}
+
 .pf-score-jump {
-  background: #DCFCE7; color: #15803D;
-  font-size: 12px; font-weight: 700;
-  padding: 4px 8px; border-radius: 6px;
+  background: linear-gradient(135deg, #7F77DD 0%, #534AB7 100%);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .pf-section-label {
-  font-size: 11px; font-weight: 600;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
-  margin-bottom: 6px;
+  color: #9ca3af;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .pf-enhanced {
   width: 100%;
-  min-height: 180px;
+  min-height: 140px;
   padding: 12px;
-  font-family: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
   font-size: 13px;
+  font-family: inherit;
   line-height: 1.6;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
   resize: vertical;
-  background: #fff;
-  color: #1a1a1a;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-}
-@media (prefers-color-scheme: dark) {
-  .pf-enhanced { background: #2a2a2e; color: #e5e5e5; border-color: rgba(255, 255, 255, 0.1); }
-}
-.pf-enhanced:focus {
-  outline: none; border-color: #7F77DD;
-  box-shadow: 0 0 0 3px rgba(127, 119, 221, 0.15);
+  margin-bottom: 14px;
+  transition: border 0.15s;
 }
 
-.pf-actions { display: flex; gap: 8px; margin-bottom: 8px; }
-.pf-btn {
-  flex: 1; padding: 10px 14px;
-  font-size: 13px; font-weight: 600;
-  border-radius: 8px; border: none; cursor: pointer;
-  font-family: inherit; transition: all 0.15s;
+.pf-enhanced:focus {
+  outline: none;
+  border-color: #7F77DD;
+  box-shadow: 0 0 0 3px rgba(127, 119, 221, 0.12);
 }
+
+/* Actions */
+.pf-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pf-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
 .pf-btn-primary {
   background: linear-gradient(135deg, #7F77DD 0%, #534AB7 100%);
   color: #fff;
+  box-shadow: 0 2px 4px rgba(83, 74, 183, 0.2);
 }
-.pf-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(83, 74, 183, 0.3); }
+
+.pf-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(83, 74, 183, 0.3);
+}
 
 .pf-btn-secondary {
-  background: transparent; color: #6b7280;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  flex: 0 0 auto;
+  background: #fff;
+  color: #534AB7;
+  border: 1px solid rgba(127, 119, 221, 0.3);
 }
-.pf-btn-secondary:hover { background: rgba(0, 0, 0, 0.04); }
-@media (prefers-color-scheme: dark) {
-  .pf-btn-secondary { color: #d1d5db; border-color: rgba(255, 255, 255, 0.15); }
-  .pf-btn-secondary:hover { background: rgba(255, 255, 255, 0.06); }
+
+.pf-btn-secondary:hover {
+  background: rgba(127, 119, 221, 0.05);
 }
 
 .pf-remaining {
-  font-size: 11px;
-  color: #9ca3af;
   text-align: center;
-  margin-top: 4px;
+  font-size: 12px;
+  color: #9ca3af;
 }
 
-/* Toast */
+/* ─── Toast Notifications ────────────────────────────────────────────────── */
 .pf-toast {
   position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  padding: 10px 18px;
-  background: #1a1a1a; color: #fff;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  padding: 12px 20px;
+  background: #1a1a1a;
+  color: #fff;
   border-radius: 8px;
-  font-size: 13px; font-weight: 500;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 99999;
   opacity: 0;
-  z-index: 99999999;
-  transition: opacity 0.2s, transform 0.25s;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
-.pf-toast.pf-toast-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
-.pf-toast-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
-.pf-toast-warning { background: linear-gradient(135deg, #D97706 0%, #B45309 100%); }
+
+.pf-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.pf-toast-success {
+  background: #059669;
+}
+
+.pf-toast-warning {
+  background: #F59E0B;
+}
+
+.pf-toast-error {
+  background: #DC2626;
+}
+
+/* Fix ChatGPT empty-state vertical stacking */
+#promptforge-btn {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Force action buttons into horizontal row */
+form:has(#promptforge-btn) button {
+  vertical-align: middle;
+}
+
+/* Empty state fix */
+form:has(#promptforge-btn) [class*="voice"],
+form:has(#promptforge-btn) [class*="speech"],
+form:has(#promptforge-btn) [class*="bottom"] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}

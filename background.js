@@ -1,13 +1,9 @@
 
 const CONFIG = {
-  // ⚠️  Your live backend URL
-  API_URL: "https://prompt-forge-backend.vercel.app",
 
-  // ⚠️  Your Supabase URL and ANON key (NOT service_role!)
-  // Get these from: Supabase → Project Settings → API
-  SUPABASE_URL: "https://YOUR-PROJECT.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGc-your-anon-key-here",
-
+  API_URL: "https://api.promptforge.website",
+  SUPABASE_URL: "https://sbgzxkhendlwgnryuqfs.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNiZ3p4a2hlbmRsd2ducnl1cWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3ODY1MjYsImV4cCI6MjA5MzM2MjUyNn0.1GfbZ0LRRazt41_3m9z7dqXH0_8p-gfl6icjccp9nuU",
   HISTORY_LIMIT: 50,
 };
 
@@ -93,6 +89,24 @@ async function supabaseSignOut() {
   }
   await chrome.storage.local.remove(["session", "user"]);
 }
+// Send password reset email
+async function resetPassword(email) {
+  const resp = await fetch(`${CONFIG.SUPABASE_URL}/auth/v1/recover`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": CONFIG.SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!resp.ok) {
+    const data = await resp.json();
+    throw new Error(data.error_description || data.msg || "Failed to send reset email");
+  }
+
+  return true;
+}
 
 // ─── Session management ─────────────────────────────────────────────────────
 async function saveSession(authResponse) {
@@ -175,6 +189,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.action === "signOut") {
     supabaseSignOut().then(() => sendResponse({ success: true }));
+    return true;
+  }
+
+  if (message.action === "resetPassword") {
+    resetPassword(message.email)
+      .then(() => sendResponse({ success: true }))
+      .catch(err => sendResponse({ success: false, error: err.message }));
     return true;
   }
 

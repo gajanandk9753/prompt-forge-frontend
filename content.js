@@ -1,14 +1,8 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PromptForge — Content Script v4
-// ─────────────────────────────────────────────────────────────────────────────
-// Button appears to LEFT of mic icon, never duplicates
-// ─────────────────────────────────────────────────────────────────────────────
-
 (function () {
   "use strict";
 
   let panel = null;
-  let buttonInjected = false;
+
 
   const SELECTORS = {
     input: [
@@ -22,7 +16,6 @@
       '[data-testid^="conversation-turn"]',
       'article[data-testid^="conversation"]'
     ],
-    sendButton: 'button[data-testid="send-button"]',
   };
 
   function findElement(list) {
@@ -40,6 +33,8 @@
     }
     return [];
   }
+
+  // Find the send button using multiple selectors
 
   function getPromptText() {
     const input = findElement(SELECTORS.input);
@@ -88,36 +83,106 @@
     return context.length > 100 ? context : null;
   }
 
-  // ─── BUTTON INJECTION (simple, no duplication) ───────────────────────────
-  function injectButton() {
-    // CRITICAL: Only inject once
-    if (buttonInjected || document.getElementById("promptforge-btn")) return;
+function injectButton() {
+  if (document.getElementById("promptforge-btn")) return;
 
-    const sendBtn = document.querySelector(SELECTORS.sendButton);
-    if (!sendBtn) return;
+  const textarea = document.querySelector("#prompt-textarea");
 
-    const container = sendBtn.parentElement;
-    if (!container) return;
-
-    const btn = document.createElement("button");
-    btn.id = "promptforge-btn";
-    btn.type = "button";
-    btn.className = "pf-sparkle-btn";
-    btn.title = "Enhance your prompt (Ctrl+Shift+E)";
-    btn.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l3.5 7.5L24 14l-7.5 3.5L13 25l-3.5-7.5L2 14l7.5-3.5L13 3z"/>
-      </svg>
-    `;
-    btn.addEventListener("click", handleEnhanceClick);
-
-    // Insert BEFORE send button
-    container.insertBefore(btn, sendBtn);
-    buttonInjected = true;
-
-    // Update visibility when input changes
-    observeInputChanges();
+  if (!textarea) {
+    console.log("[PromptForge] Textarea not found yet...");
+    return;
   }
+
+  // RIGHT SIDE ACTIONS AREA (mic/send buttons container)
+  const actionArea =
+    textarea
+      .closest("form")
+      ?.querySelector('[class*="bottom"], [class*="footer"], [class*="controls"]')
+    ||
+    textarea
+      .closest("form")
+      ?.querySelector("button")
+      ?.parentElement;
+
+  if (!actionArea) {
+    console.log("[PromptForge] Action area not found...");
+    return;
+  }
+
+    // CREATE BUTTON
+  const btn = document.createElement("button");
+  btn.id = "promptforge-btn";
+  btn.type = "button";
+  btn.className = "pf-sparkle-btn";
+  btn.title = "Enhance your prompt";
+
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l3.5 7.5L24 14l-7.5 3.5L13 25l-3.5-7.5L2 14l7.5-3.5L13 3z"/>
+    </svg>
+  `;
+
+  btn.addEventListener("click", handleEnhanceClick);
+
+const buttons = Array.from(actionArea.querySelectorAll("button"));
+
+const micBtn = buttons.find(btn => {
+  const label =
+    btn.getAttribute("aria-label") ||
+    btn.getAttribute("data-testid") ||
+    "";
+
+  return (
+    label.toLowerCase().includes("voice") ||
+    label.toLowerCase().includes("speech") ||
+    label.toLowerCase().includes("microphone")
+  );
+});
+
+if (!micBtn) {
+  console.log("[PromptForge] Mic button not found...");
+
+  // fallback: second last button usually mic
+  const allBtns = actionArea.querySelectorAll("button");
+
+  if (allBtns.length >= 2) {
+    allBtns[allBtns.length - 2].before(btn);
+  }
+
+  return;
+}
+
+
+
+  // INSERT LEFT OF MIC BUTTON
+  const sendBtn =
+    buttons.find(btn =>
+      btn.querySelector("svg path[d*='M']")
+    ) || buttons[buttons.length - 1];
+
+  if (sendBtn) {
+      const wrapper = document.createElement("div");
+      wrapper.style.display = "flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.gap = "8px";
+
+      sendBtn.parentNode.insertBefore(wrapper, sendBtn);
+
+      wrapper.appendChild(btn);
+      wrapper.appendChild(sendBtn);
+  } else {
+    micBtn.before(btn);
+  }
+
+  console.log("[PromptForge] ✨ Button inserted beside mic button");
+
+  observeInputChanges();
+}
 
   function observeInputChanges() {
     const input = findElement(SELECTORS.input);
@@ -138,8 +203,8 @@
     if (!btn) return;
 
     const hasText = getPromptText().length > 2;
-    btn.style.opacity = hasText ? "1" : "0.4";
-    btn.style.pointerEvents = hasText ? "auto" : "none";
+    btn.style.opacity = hasText ? "1" : "0.6";
+    btn.style.pointerEvents = "auto";
 
     const hasContext = !!getConversationContext();
     btn.classList.toggle("pf-has-context", hasContext);
@@ -147,6 +212,17 @@
       ? "Enhance follow-up (Ctrl+Shift+E)"
       : "Enhance your prompt (Ctrl+Shift+E)";
   }
+
+  function startObserver() {
+  const observer = new MutationObserver(() => {
+    injectButton();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
 
   async function handleEnhanceClick(e) {
     if (e) { e.preventDefault(); e.stopPropagation(); }
@@ -333,24 +409,16 @@
     }
   });
 
-  // ─── INJECTION STRATEGY (simple, no aggressive polling) ──────────────────
-  function tryInject() {
-    if (!buttonInjected) injectButton();
-  }
+  window.addEventListener("load", () => {
+  injectButton();
 
-  // Try every 500ms for first 10 seconds
-  let attempts = 0;
-  const interval = setInterval(() => {
-    tryInject();
-    attempts++;
-    if (attempts >= 20 || buttonInjected) clearInterval(interval);
-  }, 500);
+  startObserver();
 
-  // Also try on navigation changes
-  const navObserver = new MutationObserver(tryInject);
-  if (document.body) {
-    navObserver.observe(document.body, { childList: true, subtree: true });
-  }
+  setInterval(() => {
+    injectButton();
+  }, 2000);
+});
 
-  console.log("[PromptForge] v4 content script loaded");
+
 })();
+
