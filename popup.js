@@ -226,7 +226,7 @@ async function refreshUsage() {
     hint.textContent = `${remaining} enhancements left today`;
     hint.style.color = "var(--success)";
   } else {
-    hint.textContent = `${remaining} enhancements left today`;
+    hint.textContent = `${remaining} free enhancements remaining`;
     hint.style.color = "var(--text-muted)";
   }
 }
