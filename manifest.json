@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "PromptForge — AI Prompt Enhancer",
   "short_name": "PromptForge",
-  "version": "4.0.0",
-  "description": "Transform weak prompts into expert-level prompts. Get dramatically better answers from ChatGPT.",
+  "version": "1.0.1",
+  "description": "Transform weak prompts into expert-level instructions instantly. Get dramatically better answers from ChatGPT with one click.",
 
   "icons": {
     "16": "icons/icon16.png",
@@ -21,28 +21,24 @@
     "service_worker": "background.js"
   },
 
-"content_scripts": [
-  {
-    "matches": [
-      "https://chatgpt.com/*",
-      "https://*.chatgpt.com/*"
-    ],
-    "js": ["content.js"],
-    "css": ["content.css"],
-    "run_at": "document_end"
-  }
-],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
 
   "permissions": [
-    "storage",
-    "activeTab"
+    "storage"
   ],
 
   "host_permissions": [
-    "http://localhost:3000/*",
-    "https://prompt-forge-backend.vercel.app/*",
-    "https://*.supabase.co/*",
-    "https://chatgpt.com/*",
-    "https://*.chatgpt.com/*"
+    "https://api.promptforge.website/*",
+    "https://*.supabase.co/*"
   ]
 }

@@ -379,6 +379,29 @@ body {
   letter-spacing: -0.02em;
 }
 
+.pf-mini-loader {
+  width: 18px;
+  height: 18px;
+
+  border-radius: 999px;
+
+  border: 2px solid rgba(127,119,221,0.18);
+  border-top-color: #8B7FFF;
+
+  display: inline-block;
+
+  animation: pfMiniSpin 0.7s linear infinite;
+
+  box-shadow:
+    0 0 10px rgba(139,127,255,0.22);
+}
+
+@keyframes pfMiniSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .usage-bar {
   width: 100%;
   height: 6px;

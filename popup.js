@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// PromptForge — Popup Script v5
-// ─────────────────────────────────────────────────────────────────────────────
-
 let currentMode = "signin";
 let cachedHistory = [];
 
@@ -80,6 +76,13 @@ function setupAllHandlers() {
     } else {
       showError(result?.error || "Could not send reset email.");
     }
+  });
+
+  // help button
+  document.getElementById("help-btn").addEventListener("click", () => {
+  chrome.tabs.create({
+    url: "https://forms.gle/9ivM7oNTft9L6Kjy7"
+    });
   });
 
   // Settings button
@@ -203,7 +206,7 @@ async function refreshUsage() {
   }
 
   const used = usage.used || 0;
-  const limit = usage.limit || 5;
+  const limit = usage.limit || "..";
   const remaining = usage.remaining ?? Math.max(0, limit - used);
 
   display.textContent = `${used} / ${limit}`;

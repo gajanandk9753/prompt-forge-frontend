@@ -88,103 +88,52 @@ function injectButton() {
 
   const textarea = document.querySelector("#prompt-textarea");
 
-  if (!textarea) {
-    console.log("[PromptForge] Textarea not found yet...");
-    return;
+  if (!textarea) return;
+
+  // OUTER COMPOSER CONTAINER
+  const composer =
+    textarea.closest("form") ||
+    textarea.parentElement;
+
+  if (!composer) return;
+
+  // create overlay anchor
+  let anchor = composer.querySelector(".pf-overlay-anchor");
+
+  if (!anchor) {
+    anchor = document.createElement("div");
+    anchor.className = "pf-overlay-anchor";
+    composer.appendChild(anchor);
   }
 
-  // RIGHT SIDE ACTIONS AREA (mic/send buttons container)
-  const actionArea =
-    textarea
-      .closest("form")
-      ?.querySelector('[class*="bottom"], [class*="footer"], [class*="controls"]')
-    ||
-    textarea
-      .closest("form")
-      ?.querySelector("button")
-      ?.parentElement;
-
-  if (!actionArea) {
-    console.log("[PromptForge] Action area not found...");
-    return;
-  }
-
-    // CREATE BUTTON
   const btn = document.createElement("button");
+
   btn.id = "promptforge-btn";
   btn.type = "button";
-  btn.className = "pf-sparkle-btn";
+  btn.className = "pf-floating-btn";
   btn.title = "Enhance your prompt";
 
-  btn.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round">
-      <path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l3.5 7.5L24 14l-7.5 3.5L13 25l-3.5-7.5L2 14l7.5-3.5L13 3z"/>
-    </svg>
-  `;
+btn.innerHTML = `
+<svg viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-linecap="round"
+  stroke-linejoin="round">
+  <path d="M12 3L14.8 9.2L21 12L14.8 14.8L12 21L9.2 14.8L3 12L9.2 9.2L12 3Z"/>
+</svg>
+`;
 
   btn.addEventListener("click", handleEnhanceClick);
 
-const buttons = Array.from(actionArea.querySelectorAll("button"));
-
-const micBtn = buttons.find(btn => {
-  const label =
-    btn.getAttribute("aria-label") ||
-    btn.getAttribute("data-testid") ||
-    "";
-
-  return (
-    label.toLowerCase().includes("voice") ||
-    label.toLowerCase().includes("speech") ||
-    label.toLowerCase().includes("microphone")
-  );
-});
-
-if (!micBtn) {
-  console.log("[PromptForge] Mic button not found...");
-
-  // fallback: second last button usually mic
-  const allBtns = actionArea.querySelectorAll("button");
-
-  if (allBtns.length >= 2) {
-    allBtns[allBtns.length - 2].before(btn);
-  }
-
-  return;
-}
-
-
-
-  // INSERT LEFT OF MIC BUTTON
-  const sendBtn =
-    buttons.find(btn =>
-      btn.querySelector("svg path[d*='M']")
-    ) || buttons[buttons.length - 1];
-
-  if (sendBtn) {
-      const wrapper = document.createElement("div");
-      wrapper.style.display = "flex";
-      wrapper.style.alignItems = "center";
-      wrapper.style.gap = "8px";
-
-      sendBtn.parentNode.insertBefore(wrapper, sendBtn);
-
-      wrapper.appendChild(btn);
-      wrapper.appendChild(sendBtn);
-  } else {
-    micBtn.before(btn);
-  }
-
-  console.log("[PromptForge] ✨ Button inserted beside mic button");
+  anchor.appendChild(btn);
 
   observeInputChanges();
 }
 
   function observeInputChanges() {
+    if (window.pfObserverAttached) return;
+    window.pfObserverAttached = true;
+
     const input = findElement(SELECTORS.input);
     if (!input) return;
 
@@ -414,9 +363,6 @@ if (!micBtn) {
 
   startObserver();
 
-  setInterval(() => {
-    injectButton();
-  }, 2000);
 });
 
 
