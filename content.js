@@ -261,12 +261,97 @@ btn.innerHTML = `
     }
 
     if (state === "error") {
+
+      let title = "Something went wrong";
+      let message = escapeHtml(data.message || "Unknown error");
+      let actionBtn = "";
+
+      const msg = (data.message || "").toLowerCase();
+
+      // FREE LIMIT
+      if (
+        msg.includes("free limit reached") ||
+        msg.includes("daily limit reached") ||
+        msg.includes("limit reached")
+      ) {
+
+        title = "Free limit reached";
+        message =
+          "You've used all your free prompt enhancements.";
+
+        actionBtn = `
+          <button class="pf-upgrade-btn">
+            Upgrade to Pro
+          </button>
+        `;
+      }
+
+      // AUTH
+      else if (
+        msg.includes("sign in") ||
+        msg.includes("401") ||
+        msg.includes("unauthorized")
+      ) {
+
+        title = "Sign in required";
+        message =
+          "Please sign in to continue using PromptForge.";
+      }
+
+      // EXTENSION RELOAD
+      else if (
+        msg.includes("context invalidated")
+      ) {
+
+        title = "Extension updated";
+        message =
+          "PromptForge was updated. Refresh ChatGPT once.";
+      }
+
+      // AI BUSY
+      else if (
+        msg.includes("busy") ||
+        msg.includes("quota") ||
+        msg.includes("429")
+      ) {
+
+        title = "AI is busy";
+        message =
+          "Too many requests right now. Try again in a moment.";
+      }
+
       body.innerHTML = `
-        <div class="pf-error">
-          <p class="pf-error-title">Something went wrong</p>
-          <p class="pf-error-msg">${escapeHtml(data.message)}</p>
+        <div class="pf-error-state">
+
+          <div class="pf-error-icon">
+            ✨
+          </div>
+
+          <p class="pf-error-title">
+            ${title}
+          </p>
+
+          <p class="pf-error-msg">
+            ${message}
+          </p>
+
+          ${actionBtn}
+
         </div>
       `;
+
+      const upgradeBtn =
+        body.querySelector(".pf-upgrade-btn");
+
+      if (upgradeBtn) {
+        upgradeBtn.addEventListener("click", () => {
+          window.open(
+            "https://api.promptforge.website/pricing/pricing.html",
+            "_blank"
+          );
+        });
+      }
+
       return;
     }
 

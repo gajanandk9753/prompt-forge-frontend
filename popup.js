@@ -62,6 +62,16 @@ function setupAllHandlers() {
     }
   });
 
+  // Website button
+    document.getElementById("website-btn")
+    ?.addEventListener("click", () => {
+
+      chrome.tabs.create({
+        url: "https://api.promptforge.website/"
+      });
+
+    });
+
   // Forgot password
   document.getElementById("forgot-btn").addEventListener("click", async () => {
     const email = document.getElementById("email-input").value.trim();
@@ -123,6 +133,16 @@ function setupAllHandlers() {
       });
     });
   });
+
+      // Upgrade button
+    document.getElementById("upgrade-btn-popup")
+    ?.addEventListener("click", () => {
+
+      chrome.tabs.create({
+        url: "https://api.promptforge.website/pricing/pricing.html"
+      });
+
+    });
 }
 
 function switchAuthMode(mode) {
@@ -197,6 +217,7 @@ async function refreshUsage() {
   const bar = document.getElementById("usage-bar");
   const hint = document.getElementById("usage-hint");
   const planBadge = document.getElementById("plan-badge");
+  const upgradeRow =document.getElementById("upgrade-row");
 
   if (usage.error) {
     display.textContent = "—";
@@ -212,18 +233,29 @@ async function refreshUsage() {
   display.textContent = `${used} / ${limit}`;
   bar.style.width = `${Math.min(100, (used / limit) * 100)}%`;
 
-  if (usage.isPremium) {
-    planBadge.textContent = "Pro";
-    planBadge.classList.add("pro");
-    document.getElementById("settings-plan").textContent = "Pro plan";
-  } else {
-    planBadge.textContent = "Free";
-    planBadge.classList.remove("pro");
-    document.getElementById("settings-plan").textContent = "Free plan";
-  }
+    if (usage.isPremium) {
+
+      planBadge.textContent = "Pro";
+      planBadge.classList.add("pro");
+
+      document.getElementById("settings-plan")
+        .textContent = "Pro plan";
+
+      upgradeRow.style.display = "none";
+
+    } else {
+
+      planBadge.textContent = "Free";
+      planBadge.classList.remove("pro");
+
+      document.getElementById("settings-plan")
+        .textContent = "Free plan";
+
+      upgradeRow.style.display = "block";
+    }
 
   if (used >= limit && limit > 0) {
-    hint.textContent = "Daily limit reached. Resets at midnight.";
+    hint.textContent = "Free access ended. Upgrade to continue!";
     hint.style.color = "var(--danger)";
   } else if (usage.isPremium) {
     hint.textContent = `${remaining} enhancements left today`;

@@ -515,3 +515,95 @@ form:has(#promptforge-btn) [class*="bottom"] {
   flex-direction: row !important;
   align-items: center !important;
 }
+
+.pf-error-state {
+  padding: 28px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.pf-error-icon {
+  width: 58px;
+  height: 58px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(127,119,221,0.16),
+      rgba(83,74,183,0.2)
+    );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 24px;
+
+  margin-bottom: 16px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.pf-error-title {
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 8px;
+}
+
+.pf-error-msg {
+  font-size: 13px;
+  line-height: 1.6;
+
+  color: #6B7280;
+
+  max-width: 280px;
+}
+
+.pf-upgrade-btn {
+  margin-top: 18px;
+
+  height: 42px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7F77DD 0%,
+      #534AB7 100%
+    );
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+
+  box-shadow:
+    0 10px 24px rgba(83,74,183,0.22);
+}
+
+.pf-upgrade-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 14px 32px rgba(83,74,183,0.3);
+}
